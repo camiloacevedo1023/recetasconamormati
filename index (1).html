@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Menú Mati | Para Lau con Amor</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        ios: {
+                            bg: '#F2F2F7',
+                            card: '#FFFFFF',
+                            blue: '#007AFF',
+                            green: '#34C759',
+                            pink: '#FF2D55',
+                            orange: '#FF9500',
+                            gray: '#8E8E93',
+                            indigo: '#5856D6',
+                            softGreen: '#E8F5E9'
+                        }
+                    },
+                    borderRadius: { 'ios': '14px', 'ios-lg': '22px', 'ios-xl': '38px' }
+                }
+            }
+        }
+    </script>
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #F2F2F7; -webkit-tap-highlight-color: transparent; user-select: none; overflow-x: hidden; color: #1C1C1E; }
+        .iphone-container { max-width: 430px; margin: 0 auto; min-height: 100vh; background: #F2F2F7; position: relative; display: flex; flex-direction: column; }
+        .glass-nav { background: rgba(255, 255, 255, 0.85); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); border-top: 0.5px solid rgba(0,0,0,0.1); }
+        .safe-area-bottom { padding-bottom: env(safe-area-inset-bottom, 24px); }
+        .safe-area-top { padding-top: env(safe-area-inset-top, 44px); }
+        .ios-btn-active:active { transform: scale(0.96); opacity: 0.8; }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .category-chip.active { background-color: #34C759; color: white; border-color: #34C759; }
+        .ios-card { background: white; border-radius: 20px; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+        .profile-photo { width: 120px; height: 120px; border-radius: 60px; object-fit: cover; border: 4px solid white; box-shadow: 0 8px 16px rgba(0,0,0,0.1); }
+    </style>
+</head>
+<body class="antialiased">
+
+    <div class="iphone-container">
+        <header id="app-header" class="safe-area-top sticky top-0 z-40 bg-[#F2F2F7]/90 backdrop-blur-xl px-6 py-4 flex justify-between items-end border-b border-black/5">
+            <div id="header-left">
+                <span id="greeting-top" class="text-[11px] font-bold text-ios-green uppercase tracking-[0.15em]">Hola Lau ❤️</span>
+                <h1 id="view-title" class="text-3xl font-extrabold tracking-tight">Menú Mati</h1>
+            </div>
+            <div class="flex items-center gap-3 mb-1">
+                <div id="api-status" class="w-2.5 h-2.5 rounded-full bg-red-400 transition-all duration-500"></div>
+                <button onclick="router.navigate('settings')" class="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm ios-btn-active">
+                    <i class="fa-solid fa-gear text-ios-gray"></i>
+                </button>
+            </div>
+        </header>
+
+        <main id="main-view" class="flex-grow px-6 pb-32 pt-4"></main>
+
+        <nav id="bottom-nav" class="fixed bottom-0 left-0 right-0 glass-nav z-50 safe-area-bottom hidden">
+            <div class="max-w-[430px] mx-auto flex justify-around items-center py-4">
+                <button onclick="router.navigate('planner')" data-tab="planner" class="flex flex-col items-center gap-1.5 text-ios-gray transition-colors">
+                    <i class="fa-solid fa-calendar-day text-2xl"></i>
+                    <span class="text-[10px] font-semibold">Planes</span>
+                </button>
+                <button onclick="router.navigate('inventory')" data-tab="inventory" class="flex flex-col items-center gap-1.5 text-ios-gray transition-colors">
+                    <i class="fa-solid fa-basket-shopping text-2xl"></i>
+                    <span class="text-[10px] font-semibold">Mercado</span>
+                </button>
+                <button onclick="router.navigate('tracking')" data-tab="tracking" class="flex flex-col items-center gap-1.5 text-ios-gray transition-colors">
+                    <i class="fa-solid fa-chart-line text-2xl"></i>
+                    <span class="text-[10px] font-semibold">Seguimiento</span>
+                </button>
+                <button onclick="router.navigate('profile')" data-tab="profile" class="flex flex-col items-center gap-1.5 text-ios-gray transition-colors">
+                    <i class="fa-solid fa-child-reaching text-2xl"></i>
+                    <span class="text-[10px] font-semibold">Mati</span>
+                </button>
+            </div>
+        </nav>
+    </div>
+
+    <!-- Modals -->
+    <div id="modal-container" class="fixed inset-0 z-[60] bg-black/40 backdrop-blur-sm hidden flex items-end">
+        <div id="modal-content" class="w-full"></div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" class="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] px-5 py-3 bg-slate-900/90 text-white text-[13px] font-bold rounded-2xl shadow-2xl opacity-0 transition-all pointer-events-none flex items-center gap-2">
+        <i id="toast-icon" class="fa-solid fa-circle-check text-ios-green"></i>
+        <span id="toast-text"></span>
+    </div>
+
+    <script>
+        const COLOMBIAN_CATALOG = {
+            'Proteínas': ['Huevos', 'Pechuga de Pollo', 'Carne Molida', 'Lomo de Cerdo', 'Trucha', 'Lentejas', 'Frijoles Rojos', 'Garbanzos', 'Quesito Antioqueño', 'Atún'],
+            'Frutas': ['Banano', 'Granadilla', 'Papaya', 'Mango Tomy', 'Lulo', 'Guayaba Manzana', 'Mandarina', 'Fresa', 'Pera', 'Manzana Roja', 'Melón'],
+            'Verduras': ['Tomate Chonto', 'Cebolla Larga', 'Zanahoria', 'Espinaca Bogotana', 'Brócoli', 'Ahuyama', 'Arveja Verde', 'Habichuela', 'Cilantro', 'Pepino'],
+            'Carbohidratos': ['Arepa de Maíz', 'Arroz Blanco', 'Papa Criolla', 'Papa Nevada', 'Yuca', 'Plátano Maduro', 'Pasta Espagueti', 'Pan Tajado', 'Avena en Hojuelas'],
+            'Lácteos': ['Leche Entera', 'Yogur de Fresa', 'Cuajada', 'Mantequilla', 'Kumis'],
+            'Snacks': ['Galletas de Soda', 'Frutos Secos', 'Barritas de Avena', 'Maíz Pira'],
+            'Bebidas': ['Agua', 'Agua de Panela', 'Jugo de Lulo', 'Jugo de Guayaba', 'Avena Casera']
+        };
+
+        let state = JSON.parse(localStorage.getItem('mati_app_v10')) || {
+            setupComplete: false,
+            currentStep: 1,
+            profile: { name: 'Mati', age: 2, weight: 12, height: 86, allergies: 'Ninguna', favorites: '', photo: null },
+            inventory: [],
+            apiKey: '',
+            weeklyMenu: null,
+            dailyLogs: {} 
+        };
+
+        let currentAddCategory = null;
+        let selectedDayPlanner = 'lunes';
+
+        const save = () => { localStorage.setItem('mati_app_v10', JSON.stringify(state)); updateUI(); };
+
+        const showToast = (msg, isError = false) => {
+            const t = document.getElementById('toast');
+            document.getElementById('toast-text').innerText = msg;
+            document.getElementById('toast-icon').className = isError ? "fa-solid fa-triangle-exclamation text-ios-pink" : "fa-solid fa-circle-check text-ios-green";
+            t.style.opacity = '1'; t.style.transform = 'translate(-50%, -10px)';
+            setTimeout(() => { t.style.opacity = '0'; t.style.transform = 'translate(-50%, 0)'; }, 2500);
+        };
+
+        const updateUI = () => {
+            const status = document.getElementById('api-status');
+            if(status) status.className = `w-2.5 h-2.5 rounded-full ${state.apiKey ? 'bg-ios-green shadow-[0_0_8px_rgba(52,199,89,0.5)]' : 'bg-red-400'}`;
+            if(state.setupComplete) {
+                document.getElementById('bottom-nav').classList.remove('hidden');
+            }
+        };
+
+        const router = {
+            navigate(view) {
+                const main = document.getElementById('main-view');
+                const title = document.getElementById('view-title');
+                const greeting = document.getElementById('greeting-top');
+                main.innerHTML = ''; window.scrollTo(0, 0);
+
+                document.querySelectorAll('nav button').forEach(b => {
+                    const isActive = b.dataset.tab === view;
+                    b.classList.toggle('text-ios-green', isActive); b.classList.toggle('text-ios-gray', !isActive);
+                });
+
+                if(!state.setupComplete && view !== 'settings') {
+                    title.innerText = "Bienvenida";
+                    greeting.innerText = "Configuración Inicial ⚙️";
+                    renderSetup(main);
+                    return;
+                }
+
+                switch(view) {
+                    case 'planner': title.innerText = 'Loncheras'; greeting.innerText = 'Plan Lunes a Viernes 🍱'; renderPlanner(main); break;
+                    case 'inventory': title.innerText = 'Mercado'; greeting.innerText = 'Lo que hay en casa 🏠'; renderInventory(main); break;
+                    case 'tracking': title.innerText = 'Seguimiento'; greeting.innerText = 'Nutrición de Mati ❤️'; renderTracking(main); break;
+                    case 'profile': title.innerText = 'Mati'; greeting.innerText = 'Nuestro gran explorador ⚡'; renderProfile(main); break;
+                    case 'settings': title.innerText = 'Ajustes'; greeting.innerText = 'Configuración ⚙️'; renderSettings(main); break;
+                }
+            }
+        };
+
+        function renderSetup(container) {
+            if(state.currentStep === 1) {
+                container.innerHTML = `
+                    <div class="flex flex-col items-center justify-center py-10 space-y-8 animate-slide-up text-center">
+                        <div class="w-24 h-24 bg-white rounded-[32px] flex items-center justify-center text-4xl shadow-xl">👋</div>
+                        <div class="space-y-3">
+                            <h2 class="text-3xl font-extrabold px-6 text-slate-800">¡Hola Lau! ❤️</h2>
+                            <p class="text-ios-gray px-10 leading-relaxed font-medium">Hice esta app para que organizar la comida de Mati sea más fácil para los dos. Vamos a configurarla juntos.</p>
+                        </div>
+                        <button onclick="state.currentStep=2; save(); router.navigate('setup')" class="w-full bg-ios-green text-white py-5 rounded-ios-lg font-bold shadow-lg ios-btn-active">Empezar Configuración</button>
+                    </div>
+                `;
+            } else if (state.currentStep === 2) {
+                container.innerHTML = `
+                    <div class="space-y-6 animate-slide-up">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-ios-blue rounded-full flex items-center justify-center text-white font-bold">1</div>
+                            <h3 class="text-2xl font-extrabold">Conecta la IA</h3>
+                        </div>
+                        <p class="text-sm text-ios-gray">Ingresa tu Gemini API Key para que el nutricionista virtual pueda crear los platos.</p>
+                        <input id="setup-api" type="password" placeholder="Ingresa tu Gemini API Key" value="${state.apiKey}" class="w-full p-5 bg-white border border-slate-100 rounded-2xl font-mono text-sm focus:border-ios-blue outline-none shadow-sm">
+                        <button onclick="state.apiKey=document.getElementById('setup-api').value; state.currentStep=3; save(); router.navigate('setup')" class="w-full bg-ios-blue text-white py-5 rounded-ios-lg font-bold ios-btn-active">Siguiente Paso</button>
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="space-y-6 animate-slide-up">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-ios-orange rounded-full flex items-center justify-center text-white font-bold">2</div>
+                            <h3 class="text-2xl font-extrabold text-center">Sobre Mati 👶</h3>
+                        </div>
+                        <div class="ios-card p-6 space-y-4">
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-ios-gray uppercase ml-1">Edad de nuestro gordo (años)</label>
+                                <input id="s-age" type="number" value="${state.profile.age}" class="w-full p-4 bg-ios-bg rounded-xl font-bold border-none outline-none">
+                            </div>
+                            <div class="grid grid-cols-2 gap-3">
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-ios-gray uppercase ml-1">Peso (kg)</label>
+                                    <input id="s-weight" type="number" step="0.1" value="${state.profile.weight}" class="w-full p-4 bg-ios-bg rounded-xl font-bold border-none outline-none">
+                                </div>
+                                <div class="space-y-1">
+                                    <label class="text-[10px] font-bold text-ios-gray uppercase ml-1">Estatura (cm)</label>
+                                    <input id="s-height" type="number" value="${state.profile.height}" class="w-full p-4 bg-ios-bg rounded-xl font-bold border-none outline-none">
+                                </div>
+                            </div>
+                            <div class="space-y-1">
+                                <label class="text-[10px] font-bold text-ios-gray uppercase ml-1">Alergias o notas</label>
+                                <input id="s-allergies" type="text" placeholder="Ej: Sin huevo, nada de maní..." value="${state.profile.allergies}" class="w-full p-4 bg-ios-bg rounded-xl font-bold border-none outline-none">
+                            </div>
+                        </div>
+                        <button onclick="completeSetup()" class="w-full bg-ios-green text-white py-5 rounded-ios-lg font-bold shadow-xl ios-btn-active">Terminar y Empezar ✨</button>
+                    </div>
+                `;
+            }
+        }
+
+        function completeSetup() {
+            state.profile.age = document.getElementById('s-age').value || 2;
+            state.profile.weight = document.getElementById('s-weight').value || 12;
+            state.profile.height = document.getElementById('s-height').value || 86;
+            state.profile.allergies = document.getElementById('s-allergies').value || 'Ninguna';
+            state.setupComplete = true;
+            save();
+            router.navigate('planner');
+            showToast("¡Todo listo, Lau! ❤️");
+        }
+
+        function renderInventory(container) {
+            container.innerHTML = `
+                <div class="space-y-8 animate-slide-up pb-20">
+                    <div class="ios-card p-6 space-y-4">
+                        <p class="text-[10px] font-bold text-ios-gray uppercase tracking-widest">Añadir manualmente</p>
+                        <div class="flex flex-col gap-2">
+                            <input id="manual-name" type="text" placeholder="Ej: Papitas nativas..." class="w-full p-4 bg-ios-bg rounded-xl font-bold text-sm border-none outline-none">
+                            <div class="flex gap-2">
+                                <select id="manual-cat" class="flex-grow bg-ios-bg p-4 rounded-xl font-bold text-[11px] outline-none border-none">
+                                    ${Object.keys(COLOMBIAN_CATALOG).map(c => `<option value="${c}">${c}</option>`).join('')}
+                                </select>
+                                <button onclick="saveManualItem()" class="bg-ios-green text-white px-6 rounded-xl font-bold text-sm shadow-sm ios-btn-active">Añadir</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex justify-between items-center px-1">
+                        <p class="text-sm text-ios-gray font-medium">O elige de los favoritos:</p>
+                        <button onclick="openAddModal()" class="w-10 h-10 bg-ios-green text-white rounded-full flex items-center justify-center shadow-lg ios-btn-active"><i class="fa-solid fa-plus"></i></button>
+                    </div>
+
+                    <div class="flex gap-3 overflow-x-auto no-scrollbar py-2 -mx-6 px-6">
+                        <button onclick="filterInv('Todos')" id="cat-all" class="category-chip active flex-shrink-0 px-5 py-2.5 bg-white border border-slate-200 rounded-full text-[13px] font-bold shadow-sm">Todos</button>
+                        ${Object.keys(COLOMBIAN_CATALOG).map(c => `<button onclick="filterInv('${c}')" id="cat-${c}" class="category-chip flex-shrink-0 px-5 py-2.5 bg-white border border-slate-200 rounded-full text-[13px] font-bold shadow-sm">${c}</button>`).join('')}
+                    </div>
+                    <div id="items-grid" class="grid grid-cols-1 gap-3"></div>
+                </div>
+            `;
+            filterInv('Todos');
+        }
+
+        function saveManualItem() {
+            const name = document.getElementById('manual-name').value.trim();
+            const cat = document.getElementById('manual-cat').value;
+            if(!name) return showToast("Dime qué compraste, amor", true);
+            state.inventory.push({ id: Date.now(), name, category: cat });
+            save();
+            document.getElementById('manual-name').value = '';
+            showToast(`${name} añadido ✨`);
+            filterInv('Todos');
+        }
+
+        function filterInv(cat) {
+            const grid = document.getElementById('items-grid');
+            document.querySelectorAll('.category-chip').forEach(c => c.classList.remove('active'));
+            const btn = document.getElementById(cat === 'Todos' ? 'cat-all' : `cat-${cat}`);
+            if(btn) btn.classList.add('active');
+            const filtered = cat === 'Todos' ? state.inventory : state.inventory.filter(i => i.category === cat);
+            grid.innerHTML = filtered.map(item => `
+                <div class="ios-card p-4 flex justify-between items-center animate-slide-up">
+                    <div class="flex items-center gap-4">
+                        <div class="w-10 h-10 bg-ios-softGreen rounded-xl flex items-center justify-center text-xl">${getIcon(item.category)}</div>
+                        <div>
+                            <h4 class="font-bold text-[14px]">${item.name}</h4>
+                            <p class="text-[9px] text-ios-gray uppercase font-extrabold tracking-widest">${item.category}</p>
+                        </div>
+                    </div>
+                    <button onclick="removeItem(${item.id})" class="text-ios-pink/30 p-2"><i class="fa-solid fa-circle-minus text-xl"></i></button>
+                </div>
+            `).join('');
+            if(filtered.length === 0) grid.innerHTML = `<p class="text-center py-20 text-ios-gray text-xs">No hay alimentos registrados en esta categoría.</p>`;
+        }
+
+        async function generatePlanIA() {
+            if(!state.apiKey) return showToast("Lau, falta la API Key en Ajustes", true);
+            const main = document.getElementById('main-view');
+            const oldHtml = main.innerHTML;
+            main.innerHTML = `<div class="flex flex-col items-center justify-center py-40 space-y-8 animate-pulse text-center"><div class="w-24 h-24 bg-white rounded-full flex items-center justify-center text-4xl shadow-xl animate-bounce">🪄</div><div class="space-y-2"><h3 class="font-extrabold text-xl px-10">Camilo & IA cocinando...</h3><p class="text-sm text-ios-gray px-12">Estamos armando las loncheras de Mati de Lunes a Viernes. Priorizando lo nutritivo y lo fácil de empacar.</p></div></div>`;
+            
+            const prompt = `Actúa como Camilo (padre) y Nutricionista Pediátrico Colombiano. Mati tiene ${state.profile.age} años. Alergias: ${state.profile.allergies}. Inventario disponible: ${state.inventory.map(i => i.name).join(', ')}. Genera un menú de LUNES A VIERNES (5 días). Prioriza nutrición (hierro, proteína) y facilidad de empaque (LONCHERAS REALES). Responde ÚNICAMENTE en formato JSON plano con esta estructura: {"lunes": {"desayuno": {"titulo":"", "receta":"", "nutricion":""}, "lonchera":{}, "almuerzo":{}, "merienda":{}, "cena":{}}, "martes":{...}, "miercoles":{...}, "jueves":{...}, "viernes":{...}}`;
+
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${state.apiKey}`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                
+                if (!res.ok) throw new Error(`API Status: ${res.status}`);
+                
+                const data = await res.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!text) throw new Error("La IA no devolvió contenido.");
+
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) throw new Error("No se encontró JSON en la respuesta.");
+                
+                state.weeklyMenu = JSON.parse(jsonMatch[0]);
+                save(); 
+                router.navigate('planner');
+                showToast("¡Plan de la semana listo! ❤️");
+            } catch(e) { 
+                console.error("Error IA:", e);
+                showToast("Error de conexión. Verifica tu API Key en Ajustes.", true); 
+                main.innerHTML = oldHtml;
+            }
+        }
+
+        function renderPlanner(container) {
+            if(!state.weeklyMenu) {
+                container.innerHTML = `<div class="flex flex-col items-center justify-center py-20 text-center space-y-10 animate-slide-up"><div class="w-32 h-32 bg-white rounded-[40px] flex items-center justify-center text-6xl shadow-2xl">🍱</div><h2 class="text-2xl font-extrabold px-6">¿Qué comerá Mati esta semana?</h2><p class="text-sm text-ios-gray px-12 leading-relaxed">Presiona el botón para que la IA diseñe el menú ideal de Lunes a Viernes.</p><button onclick="generatePlanIA()" class="w-full bg-ios-green text-white py-5 rounded-ios-lg font-bold shadow-xl ios-btn-active">✨ Generar Plan Lun - Vie</button></div>`;
+                return;
+            }
+            const dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes'];
+            const menu = state.weeklyMenu[selectedDayPlanner] || state.weeklyMenu['lunes'];
+            
+            container.innerHTML = `
+                <div class="space-y-6 animate-slide-up pb-10">
+                    <div class="flex gap-2 overflow-x-auto no-scrollbar py-2 -mx-6 px-6">
+                        ${dias.map(d => `<button onclick="selectedDayPlanner='${d}'; renderPlanner(document.getElementById('main-view'))" class="flex-shrink-0 px-6 py-3 rounded-2xl text-[13px] font-extrabold transition-all ${selectedDayPlanner === d ? 'bg-ios-green text-white shadow-lg' : 'bg-white text-slate-500'}"><span class="capitalize">${d}</span></button>`).join('')}
+                    </div>
+                    <div class="space-y-5">
+                        ${renderMealCard('Desayuno', menu.desayuno, 'fa-mug-saucer', 'orange')}
+                        ${renderMealCard('Lonchera', menu.lonchera, 'fa-apple-whole', 'green')}
+                        ${renderMealCard('Almuerzo', menu.almuerzo, 'fa-utensils', 'blue')}
+                        ${renderMealCard('Merienda', menu.merienda, 'fa-cookie', 'pink')}
+                        ${renderMealCard('Cena', menu.cena, 'fa-moon', 'indigo')}
+                    </div>
+                    <button onclick="generatePlanIA()" class="w-full py-6 text-ios-gray font-bold text-[11px] uppercase tracking-widest border-t border-slate-200 mt-4">Regenerar todo el plan semanal ✨</button>
+                </div>
+            `;
+        }
+
+        function renderMealCard(type, data, icon, color) {
+            const day = selectedDayPlanner;
+            const logKey = `${day}-${type}`;
+            const status = state.dailyLogs[logKey] || null;
+
+            return `
+                <div class="ios-card p-5 space-y-4 relative border border-slate-50 overflow-visible">
+                    <div class="flex justify-between items-start">
+                        <div class="flex items-center gap-3">
+                            <div class="w-10 h-10 bg-ios-${color}/10 rounded-xl flex items-center justify-center"><i class="fa-solid ${icon} text-ios-${color}"></i></div>
+                            <div>
+                                <span class="text-[10px] font-bold uppercase text-ios-gray block">${type}</span>
+                                <span class="text-[9px] font-bold text-ios-green bg-ios-softGreen px-2 py-0.5 rounded-full inline-block">✨ ${data.nutricion || 'Equilibrado'}</span>
+                            </div>
+                        </div>
+                        <div class="relative">
+                            <button onclick="toggleOptions('${logKey}')" class="p-2 text-slate-300"><i class="fa-solid fa-ellipsis-v"></i></button>
+                            <div id="opt-${logKey}" class="hidden absolute right-0 top-10 bg-white shadow-2xl rounded-2xl z-50 w-44 border border-slate-100 overflow-hidden animate-slide-up">
+                                <button onclick="editManual('${day}', '${type}')" class="w-full px-5 py-4 text-left text-xs font-bold border-b border-slate-50 hover:bg-slate-50">✍️ Editar manual</button>
+                                <button onclick="regenIA('${day}', '${type}')" class="w-full px-5 py-4 text-left text-xs font-bold text-ios-green hover:bg-slate-50">🪄 Regenerar con IA</button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="space-y-1">
+                        <h4 class="font-extrabold text-[15px] text-slate-800">${data.titulo}</h4>
+                        <p class="text-[12px] text-ios-gray leading-tight">${data.receta || data.descripcion || ''}</p>
+                    </div>
+                    <div class="pt-2 border-t border-slate-50">
+                        <p class="text-[9px] font-bold text-ios-gray uppercase mb-2 text-center">¿Mati se lo comió?</p>
+                        <div class="flex justify-between gap-2">
+                            <button onclick="setLog('${logKey}', '✅')" class="flex-1 py-2 rounded-xl text-lg ${status === '✅' ? 'bg-ios-green shadow-inner' : 'bg-ios-bg opacity-40'}">✅</button>
+                            <button onclick="setLog('${logKey}', '🟡')" class="flex-1 py-2 rounded-xl text-lg ${status === '🟡' ? 'bg-ios-orange shadow-inner' : 'bg-ios-bg opacity-40'}">🟡</button>
+                            <button onclick="setLog('${logKey}', '❌')" class="flex-1 py-2 rounded-xl text-lg ${status === '❌' ? 'bg-ios-pink shadow-inner' : 'bg-ios-bg opacity-40'}">❌</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setLog(key, val) { state.dailyLogs[key] = val; save(); renderPlanner(document.getElementById('main-view')); showToast("Registro guardado ❤️"); }
+        function toggleOptions(id) { 
+            const el = document.getElementById(`opt-${id}`);
+            document.querySelectorAll('[id^="opt-"]').forEach(o => { if(o !== el) o.classList.add('hidden'); });
+            el.classList.toggle('hidden'); 
+        }
+
+        function editManual(day, type) {
+            const typeKey = type.toLowerCase();
+            const current = state.weeklyMenu[day][typeKey];
+            const modal = document.getElementById('modal-container');
+            modal.classList.remove('hidden');
+            document.getElementById('modal-content').innerHTML = `
+                <div class="bg-white w-full rounded-t-[40px] p-8 space-y-6 animate-slide-up safe-area-bottom">
+                    <h3 class="text-xl font-extrabold text-center">Editar ${type}</h3>
+                    <div class="space-y-4">
+                        <input id="e-t" value="${current.titulo}" class="w-full p-4 bg-ios-bg rounded-xl font-bold border-none outline-none">
+                        <textarea id="e-r" class="w-full p-4 bg-ios-bg rounded-xl text-sm h-28 border-none outline-none">${current.receta || current.descripcion || ''}</textarea>
+                    </div>
+                    <button onclick="saveEdit('${day}', '${typeKey}')" class="w-full bg-ios-green text-white py-4 rounded-xl font-bold">Guardar Cambios</button>
+                    <button onclick="closeModal()" class="w-full py-2 text-ios-gray font-bold text-sm">Cancelar</button>
+                </div>
+            `;
+        }
+
+        function saveEdit(day, typeKey) {
+            state.weeklyMenu[day][typeKey].titulo = document.getElementById('e-t').value;
+            state.weeklyMenu[day][typeKey].receta = document.getElementById('e-r').value;
+            save(); closeModal(); renderPlanner(document.getElementById('main-view'));
+        }
+
+        async function regenIA(day, type) {
+            showToast("IA pensando plato nuevo...");
+            const prompt = `Como Camilo y Nutricionista, genera UN SOLO plato para ${type} del día ${day}. Usa este inventario: ${state.inventory.map(i => i.name).join(', ')}. Responde JSON puro sin markdown: {"titulo":"", "receta":"", "nutricion":""}`;
+            try {
+                const res = await fetch(`https://generativelanguage.googleapis.com/v1beta/models/gemini-3-flash-preview:generateContent?key=${state.apiKey}`, {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ contents: [{ parts: [{ text: prompt }] }] })
+                });
+                
+                if (!res.ok) throw new Error(`API Status: ${res.status}`);
+                
+                const data = await res.json();
+                const text = data.candidates?.[0]?.content?.parts?.[0]?.text;
+                if (!text) throw new Error("Sin respuesta.");
+
+                const jsonMatch = text.match(/\{[\s\S]*\}/);
+                if (!jsonMatch) throw new Error("JSON no encontrado.");
+
+                state.weeklyMenu[day][type.toLowerCase()] = JSON.parse(jsonMatch[0]);
+                save(); renderPlanner(document.getElementById('main-view')); showToast("¡Plato actualizado! ✨");
+            } catch(e) { 
+                console.error("Error IA Regen:", e);
+                showToast("Error al regenerar plato", true); 
+            }
+        }
+
+        function renderTracking(container) {
+            const logs = Object.values(state.dailyLogs);
+            const total = logs.length;
+            const comioBien = logs.filter(l => l === '✅').length;
+
+            container.innerHTML = `
+                <div class="space-y-8 animate-slide-up pb-10">
+                    <div class="bg-ios-green p-8 rounded-[32px] text-white shadow-xl space-y-4">
+                        <p class="text-[11px] font-bold uppercase opacity-80 tracking-widest">Resumen de Nutrición</p>
+                        <div class="flex items-baseline gap-2"><span class="text-5xl font-extrabold">${total}</span><span class="text-xl font-bold">Momentos</span></div>
+                        <p class="text-[13px] font-medium leading-relaxed">Mati se ha comido completo el <b>${total ? Math.round((comioBien/total)*100) : 0}%</b> de sus comidas registradas. ❤️</p>
+                    </div>
+
+                    <div class="ios-card p-6 space-y-5">
+                        <h3 class="text-[11px] font-bold text-ios-gray uppercase tracking-widest border-b border-slate-50 pb-2">Tabla Semanal Esperada</h3>
+                        <div class="space-y-4">
+                            <div class="flex justify-between items-center"><span class="text-sm font-bold">Hierro</span><div class="w-24 h-2 bg-ios-softGreen rounded-full overflow-hidden"><div class="bg-ios-green h-full w-[85%]"></div></div></div>
+                            <div class="flex justify-between items-center"><span class="text-sm font-bold">Proteína</span><div class="w-24 h-2 bg-ios-softGreen rounded-full overflow-hidden"><div class="bg-ios-green h-full w-[95%]"></div></div></div>
+                            <div class="flex justify-between items-center"><span class="text-sm font-bold">Vegetales</span><div class="w-24 h-2 bg-ios-softGreen rounded-full overflow-hidden"><div class="bg-ios-green h-full w-[60%]"></div></div></div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function renderProfile(container) {
+            container.innerHTML = `
+                <div class="space-y-8 animate-slide-up pb-10 text-center">
+                    <div class="relative inline-block mx-auto">
+                        <img id="mati-img" src="${state.profile.photo || 'https://placehold.co/200x200/e8f5e9/2e7d32?text=👶'}" class="profile-photo mx-auto">
+                        <label class="absolute bottom-1 right-1 w-10 h-10 bg-ios-green text-white rounded-full flex items-center justify-center border-4 border-ios-bg cursor-pointer ios-btn-active">
+                            <i class="fa-solid fa-camera text-sm"></i>
+                            <input type="file" class="hidden" accept="image/*" onchange="uploadPhoto(event)">
+                        </label>
+                    </div>
+                    <h2 class="text-2xl font-extrabold">Nuestro Mati ❤️</h2>
+                    <div class="grid grid-cols-2 gap-4 px-2">
+                        <div class="ios-card p-5"><span class="text-[10px] font-bold text-ios-gray uppercase block mb-1">Peso</span><span class="text-xl font-extrabold text-slate-800">${state.profile.weight} kg</span></div>
+                        <div class="ios-card p-5"><span class="text-[10px] font-bold text-ios-gray uppercase block mb-1">Estatura</span><span class="text-xl font-extrabold text-slate-800">${state.profile.height} cm</span></div>
+                    </div>
+                    <div class="ios-card p-6 text-left mx-2 space-y-4">
+                        <div class="flex justify-between items-center"><h3 class="font-bold">Datos Médicos</h3><button onclick="editPModal()" class="text-ios-blue text-xs font-bold px-3 py-1 bg-ios-blue/5 rounded-full">Editar</button></div>
+                        <div class="text-sm"><b>Alergias:</b> <span class="text-ios-pink font-bold">${state.profile.allergies}</span></div>
+                        <div class="text-[11px] text-ios-gray leading-tight">La IA ajusta las loncheras de Mati basándose en esta información para que siempre esté sano.</div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function uploadPhoto(e) {
+            const reader = new FileReader();
+            reader.onload = () => { state.profile.photo = reader.result; save(); renderProfile(document.getElementById('main-view')); };
+            reader.readAsDataURL(e.target.files[0]);
+        }
+
+        function editPModal() {
+            const modal = document.getElementById('modal-container');
+            modal.classList.remove('hidden');
+            document.getElementById('modal-content').innerHTML = `
+                <div class="bg-white w-full rounded-t-[40px] p-8 space-y-5 animate-slide-up safe-area-bottom">
+                    <h3 class="text-xl font-extrabold text-center">Editar Perfil</h3>
+                    <div class="grid grid-cols-2 gap-3">
+                        <input id="p-a" type="number" placeholder="Edad" value="${state.profile.age}" class="w-full p-4 bg-ios-bg rounded-xl font-bold outline-none">
+                        <input id="p-w" type="number" step="0.1" placeholder="Peso" value="${state.profile.weight}" class="w-full p-4 bg-ios-bg rounded-xl font-bold outline-none">
+                    </div>
+                    <input id="p-h" type="number" placeholder="Estatura" value="${state.profile.height}" class="w-full p-4 bg-ios-bg rounded-xl font-bold outline-none">
+                    <input id="p-al" type="text" placeholder="Alergias" value="${state.profile.allergies}" class="w-full p-4 bg-ios-bg rounded-xl font-bold outline-none">
+                    <button onclick="savePChanges()" class="w-full bg-ios-green text-white py-4 rounded-xl font-bold">Guardar</button>
+                    <button onclick="closeModal()" class="w-full py-2 text-ios-gray font-bold text-sm">Cancelar</button>
+                </div>
+            `;
+        }
+
+        function savePChanges() {
+            state.profile.age = document.getElementById('p-a').value;
+            state.profile.weight = document.getElementById('p-w').value;
+            state.profile.height = document.getElementById('p-h').value;
+            state.profile.allergies = document.getElementById('p-al').value;
+            save(); closeModal(); router.navigate('profile'); showToast("Datos actualizados ✨");
+        }
+
+        function renderSettings(c) {
+            c.innerHTML = `
+                <div class="space-y-8 animate-slide-up">
+                    <div class="ios-card p-6 space-y-4">
+                        <h3 class="font-bold text-lg text-slate-800">Gemini API Key</h3>
+                        <p class="text-[11px] text-ios-gray leading-tight">Sin esta clave no puedo generar las loncheras nutritivas.</p>
+                        <input id="s-api" type="password" value="${state.apiKey}" class="w-full p-4 bg-ios-bg rounded-xl font-mono text-xs outline-none focus:ring-2 ring-ios-blue/20">
+                        <button onclick="state.apiKey=document.getElementById('s-api').value; save(); showToast('Clave guardada');" class="w-full bg-slate-900 text-white py-4 rounded-xl font-bold text-sm">Actualizar Clave</button>
+                    </div>
+                    <div class="p-4">
+                        <button onclick="if(confirm('¿Lau, segura que quieres borrar todo?')){ localStorage.clear(); location.reload(); }" class="w-full bg-ios-pink/10 text-ios-pink py-4 rounded-xl font-bold text-sm">Reiniciar Aplicación</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function getIcon(cat) { const i = { 'Proteínas': '🍗', 'Frutas': '🍎', 'Verduras': '🥦', 'Carbohidratos': '🍞', 'Lácteos': '🥛', 'Snacks': '🥨', 'Bebidas': '🥤' }; return i[cat] || '📦'; }
+        function closeModal() { document.getElementById('modal-container').classList.add('hidden'); }
+        function removeItem(id) { state.inventory = state.inventory.filter(i => i.id !== id); save(); filterInv('Todos'); }
+        
+        function openAddModal() {
+            const modal = document.getElementById('modal-container');
+            modal.classList.remove('hidden');
+            document.getElementById('modal-content').innerHTML = `
+                <div class="bg-white w-full rounded-t-[40px] p-8 space-y-6 animate-slide-up shadow-2xl safe-area-bottom max-h-[80vh] overflow-y-auto">
+                    <div class="w-12 h-1.5 bg-slate-100 rounded-full mx-auto mb-2"></div>
+                    <h3 class="text-2xl font-extrabold text-center">Catálogo Rápido</h3>
+                    <div id="modal-step-1" class="grid grid-cols-2 gap-3 pb-8">
+                        ${Object.keys(COLOMBIAN_CATALOG).map(cat => `<button onclick="selectCategoryForAdd('${cat}')" class="p-4 ios-card border border-slate-50 flex flex-col items-center gap-2"><span class="text-2xl">${getIcon(cat)}</span><span class="text-[10px] font-bold uppercase tracking-tight">${cat}</span></button>`).join('')}
+                    </div>
+                    <div id="modal-step-2" class="hidden space-y-6">
+                        <div class="flex items-center gap-4"><button onclick="backToCategories()" class="w-10 h-10 bg-ios-bg rounded-full flex items-center justify-center"><i class="fa-solid fa-chevron-left text-xs"></i></button><h3 id="selected-cat-title" class="text-xl font-extrabold"></h3></div>
+                        <div id="catalog-items-grid" class="grid grid-cols-2 gap-2 pb-8"></div>
+                    </div>
+                    <button onclick="closeModal()" class="w-full py-2 text-ios-gray font-bold text-sm">Cerrar</button>
+                </div>
+            `;
+        }
+
+        function selectCategoryForAdd(cat) {
+            currentAddCategory = cat; 
+            document.getElementById('modal-step-1').classList.add('hidden'); 
+            document.getElementById('modal-step-2').classList.remove('hidden');
+            document.getElementById('selected-cat-title').innerText = cat;
+            const grid = document.getElementById('catalog-items-grid');
+            grid.innerHTML = COLOMBIAN_CATALOG[cat].map(name => `<button onclick="addCatItem('${name}')" class="p-4 bg-ios-bg rounded-2xl text-[12px] font-bold text-center active:scale-95 transition-transform">${name}</button>`).join('');
+        }
+
+        function backToCategories() { document.getElementById('modal-step-1').classList.remove('hidden'); document.getElementById('modal-step-2').classList.add('hidden'); }
+        function addCatItem(name) { state.inventory.push({ id: Date.now(), name, category: currentAddCategory }); save(); showToast(`${name} añadido ✨`); filterInv('Todos'); }
+
+        window.onload = () => { 
+            updateUI(); 
+            if(!state.setupComplete) {
+                router.navigate('setup');
+            } else {
+                router.navigate('planner');
+            }
+        };
+    </script>
+</body>
+</html>
